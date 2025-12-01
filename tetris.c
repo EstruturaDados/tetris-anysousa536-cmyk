@@ -19,6 +19,129 @@ int main() {
     //      0 - Sair
     // - A cada remoção, insira uma nova peça ao final da fila.
 
+    #include<stdio.h>
+#include<string.h>
+#include<stdlib.h>
+
+#define MAX 5
+typedef struct {
+    char tipo;
+    int id;
+} pecas;
+
+//implementando um fila circular para gerenciar as peças
+typedef struct {
+    pecas itens[MAX];
+    int frente;
+    int tras;
+    int tamanho;
+} fila;
+
+//funções da fila
+void inicializarFila(fila* f) {
+    f->frente = 0;
+    f->tras = -1;
+    f->tamanho = 0;
+}
+int estaVazia(fila* f) {
+    return f->tamanho == 0;
+}
+int estaCheia(fila* f) {
+    return f->tamanho == MAX;
+}
+
+void enqueue(fila* f, pecas p) {
+    if (estaCheia(f)) {
+        printf("Fila cheia! Nao e possivel adicionar mais pecas.\n");
+        return;
+    }
+    f->tras = (f->tras + 1) % MAX;
+    f->itens[f->tras] = p;
+    f->tamanho++;
+}
+
+void dequeue(fila* f) {
+    if (estaVazia(f)) {
+        printf("Fila vazia! Nao ha pecas para remover.\n");
+        return;
+    }
+    f->frente = (f->frente + 1) % MAX;
+    f->tamanho--;
+}
+
+int filacheia(fila* f) {
+    return f->tamanho == MAX;
+}   
+
+int filavazia(fila* f) {
+    return f->tamanho == 0;
+}
+
+void mostrarFila(fila* f) {
+    if (estaVazia(f)) {
+        printf("Fila vazia!\n");
+        return;
+    }
+    printf("Pecas na fila:\n");
+    for (int i = 0; i < f->tamanho; i++) {
+        int indice = (f->frente + i) % MAX;
+        printf("Peca ID: %d, Tipo: %c\n", f->itens[indice].id, f->itens[indice].tipo);
+    }
+}
+
+//menu
+int exibirmenu() {
+    int opcao;
+    printf("========= Menu de Pecas =========\n");
+    printf("1. Inserir nova peca\n");
+    printf("2. Jogar peca(remover da frente)\n");
+    printf("0. Sair\n");
+    printf("Escolha uma opcao: ");
+    scanf("%d", &opcao);
+    return opcao;
+}
+int main() {
+    fila filaPecas;
+    inicializarFila(&filaPecas);
+    int opcao, id_peca = 1;
+    char tipo_peca;
+
+    do {
+        opcao = exibirmenu();
+        switch (opcao) {
+            case 1://inserir peça
+               if (filacheia(&filaPecas)) {
+                    printf("Fila cheia! Nao e possivel adicionar mais pecas.\n");
+                } else {
+                    printf("Digite o tipo da peca (T,O,L,I): \n");
+                    scanf(" %c", &tipo_peca);
+                    pecas novaPeca;
+                    novaPeca.id = id_peca++;
+                    novaPeca.tipo = tipo_peca;
+                    enqueue(&filaPecas, novaPeca);
+                    printf("Peca inserida com sucesso na fila.\n");
+                }
+                break;
+            case 2://jogar peça
+                if (filavazia(&filaPecas)) {
+                    printf("Fila vazia! Nao ha pecas para jogar.\n");
+                } else {
+                    printf("Jogando a peca na frente da fila...\n");
+                    dequeue(&filaPecas);
+                    printf("Peca jogada com sucesso.\n");
+                }
+                break;
+            case 0:
+                printf("Saindo do programa.\n");
+                break;
+            default:
+                printf("Opcao invalida. Tente novamente.\n");
+        }
+        mostrarFila(&filaPecas);
+    } while (opcao != 0);
+
+    return 0;
+}
 
 
     // 🧠 Nível Aventureiro: Adição da Pilha de Reserva
@@ -50,7 +173,4 @@ int main() {
     //      4 - Trocar peça da frente com topo da pilha
     //      5 - Trocar 3 primeiros da fila com os 3 da pilha
 
-
-    return 0;
-}
 
