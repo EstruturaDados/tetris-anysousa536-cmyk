@@ -213,7 +213,8 @@ int exibirmenu() { // exibe o menu e retorna a opcao escolhida
     printf("1. Inserir nova peca\n");
     printf("2. Jogar peca(remover da frente)\n");
     printf("3. Mover peca da fila para a pilha (reserva)\n");
-    printf("4. Usar peca da reserva (remover do topo da pilha)\n");
+    printf("4. Trocar a peca da frente da fila com o topo da pilha\n");
+    printf("5. Trocar os 3 primeiros da fila com as 3 pecas da pilha\n");
     printf("0. Sair\n");
     printf("Escolha uma opcao: ");
     scanf("%d", &opcao);
@@ -259,13 +260,35 @@ int main() { // função principal
                 mostrarFila(&filaPecas);
                 mostrarPilha(&pilhaReserva);
                 break;
-            case 4://usar peça da reserva
-                if (pilhavazia(&pilhaReserva)) {
-                    printf("Pilha vazia! Nao ha pecas na reserva para usar.\n");
+            case 4://trocar peça da frente da fila com o topo da pilha
+                if (filavazia(&filaPecas)) {
+                    printf("Fila vazia! Nao ha pecas para trocar.\n");
+                } else if (pilhavazia(&pilhaReserva)) {
+                    printf("Pilha vazia! Nao ha pecas para trocar.\n");
                 } else {
-                    printf("Usando a peca do topo da pilha (reserva)...\n");
-                    pop(&pilhaReserva);
-                    printf("Peca usada com sucesso.\n");
+                    pecas pecaFila = filaPecas.itens[filaPecas.frente];
+                    pecas pecaPilha = pilhaReserva.itens[pilhaReserva.topo];
+                    filaPecas.itens[filaPecas.frente] = pecaPilha;
+                    pilhaReserva.itens[pilhaReserva.topo] = pecaFila;
+                    printf("Pecas trocadas com sucesso.\n");
+                    mostrarFila(&filaPecas);
+                    mostrarPilha(&pilhaReserva);
+                }
+                break;
+            case 5://trocar os 3 primeiros da fila com as 3 peças da pilha
+                if (filaPecas.tamanho < 3) {
+                    printf("Nao ha pecas suficientes na fila para trocar.\n");
+                } else if (pilhaReserva.topo < 2) {
+                    printf("Nao ha pecas suficientes na pilha para trocar.\n");
+                } else {
+                    for (int i = 0; i < 3; i++) {
+                        pecas pecaFila = filaPecas.itens[(filaPecas.frente + i) % MAX];
+                        pecas pecaPilha = pilhaReserva.itens[pilhaReserva.topo - i];
+                        filaPecas.itens[(filaPecas.frente + i) % MAX] = pecaPilha;
+                        pilhaReserva.itens[pilhaReserva.topo - i] = pecaFila;
+                    }
+                    printf("As 3 primeiras pecas da fila foram trocadas com as 3 pecas da pilha com sucesso.\n");
+                    mostrarFila(&filaPecas);
                     mostrarPilha(&pilhaReserva);
                 }
                 break;
